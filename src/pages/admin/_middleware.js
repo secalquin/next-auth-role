@@ -8,13 +8,17 @@ export default async function middleware(req) {
   const token = await getToken({ req, secret });
   const url = req.url;
 
-  if (requireAuth.includes(url)) {
-    if (!token) {
-      return NextResponse.redirect(`${baseUrl}/auth/login`);
+  const { user } = token;
+
+  console.log("isAdminURL:", url.includes(isAdmin));
+  console.log("Rol: ", user.role.descriptionRole);
+  if (url.includes(isAdmin)) {
+    if (!user.role.descriptionRole.includes(["ADMINISTRATOR"])) {
+      return NextResponse.redirect(`${baseUrl}/home`);
     }
   }
 
   return NextResponse.next();
 }
 
-const requireAuth = [`${baseUrl}/home`, `${baseUrl}/admin/users`];
+const isAdmin = [`${baseUrl}/admin/users`];

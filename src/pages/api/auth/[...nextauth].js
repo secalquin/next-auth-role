@@ -13,4 +13,30 @@ export default NextAuth({
       clientSecret: process.env.GITHUB_SECRET,
     }),
   ],
+  callbacks: {
+    session: async ({ session, token, user }) => {
+      session.accessToken = token.accessToken;
+      return session;
+    },
+    jwt: async ({ user, token }) => {
+      if (user) {
+        const getUser = await prisma.user.findUnique({
+          where: {
+            id: user.id,
+          },
+          include: {
+            role: true,
+          },
+        });
+
+        token.user = getUser;
+      }
+      return token;
+    },
+  },
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60, // 24 hours
+    updateAge: 24 * 60 * 60, // 24 hours
+  },
 });

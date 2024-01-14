@@ -1,7 +1,7 @@
 version: '2'
 services:
   postgres:
-    container_name: postgres
+    container_name: postgres-login
     image: 'postgres:latest'
     restart: always
     volumes:
